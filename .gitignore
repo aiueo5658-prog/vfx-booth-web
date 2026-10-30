@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/
+# 自己署名証明書(秘密鍵を含む)
+.cert/
+# 受信ページの公開用コピー(別リポジトリ vfx-booth-receiver)
+site/
+.claude/
+_test/

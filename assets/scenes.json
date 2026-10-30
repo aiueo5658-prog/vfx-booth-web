@@ -1,0 +1,492 @@
+[
+ {
+  "id": "sentai",
+  "name": "大爆発",
+  "desc": "背後で巨大な火球が炸裂する",
+  "thumb": "sentai_thumb.jpg",
+  "grade": {
+   "tint": [
+    1.15,
+    0.8,
+    0.6
+   ],
+   "amt": 0.35,
+   "contrast": 1.15,
+   "bright": 1.0
+  },
+  "glow": {
+   "color": "rgba(0,0,0,0)",
+   "blur": 0
+  },
+  "fx": {
+   "shadow": {
+    "opacity": 0.55,
+    "squash": 0.06
+   },
+   "rim": {
+    "color": [
+     1.0,
+     0.45,
+     0.15
+    ],
+    "amt": 0.6
+   }
+  },
+  "burstDelay": 600,
+  "layers": [
+   {
+    "src": "sentai_back.jpg"
+   },
+   {
+    "person": true
+   },
+   {
+    "fx": "sparks",
+    "dir": "up",
+    "x0": 0.15,
+    "x1": 0.85,
+    "y": 0.55,
+    "rise": 0.7,
+    "count": 120,
+    "size": 2.2,
+    "color": "#ff8a30"
+   },
+   {
+    "fx": "fog",
+    "y": 0.95,
+    "h": 0.28,
+    "color": "#d9b58a",
+    "alpha": 0.55,
+    "speed": 0.05
+   },
+   {
+    "fx": "shrapnel",
+    "x": 0.5,
+    "y": 0.4,
+    "count": 50,
+    "size": 9
+   },
+   {
+    "src": "sentai_front.webp"
+   },
+   {
+    "fx": "sparks",
+    "dir": "out",
+    "x": 0.5,
+    "y": 0.4,
+    "count": 220,
+    "size": 3.2,
+    "color": "#ffb050"
+   },
+   {
+    "fx": "flicker",
+    "color": "#ff5a14",
+    "amt": 0.08,
+    "flash": 0.3
+   }
+  ],
+  "shake": 12,
+  "person": {
+   "scale": 0.42,
+   "feet": 0.86
+  }
+ },
+ {
+  "id": "spell",
+  "name": "中二病の詠唱",
+  "desc": "古代遺跡で禁断の呪文を唱える",
+  "thumb": "spell_thumb.jpg",
+  "grade": {
+   "tint": [
+    0.82,
+    0.85,
+    1.15
+   ],
+   "amt": 0.3,
+   "contrast": 1.06,
+   "bright": 0.9
+  },
+  "glow": {
+   "color": "rgba(150,120,255,0.2)",
+   "blur": 8
+  },
+  "fx": {
+   "shadow": {
+    "opacity": 0.4,
+    "squash": 0.05
+   },
+   "rim": {
+    "color": [
+     0.6,
+     0.45,
+     1.0
+    ],
+    "amt": 0.85
+   }
+  },
+  "burstDelay": 300,
+  "layers": [
+   {
+    "src": "spell_back.jpg"
+   },
+   {
+    "fx": "magicCircle",
+    "part": "back",
+    "x": 0.5,
+    "y": 0.965,
+    "r": 0.27,
+    "squash": 0.2,
+    "color": "#a58bff"
+   },
+   {
+    "fx": "spellRings",
+    "part": "back",
+    "x": 0.5,
+    "color": "#c9b8ff",
+    "rings": [
+     {
+      "y": 0.42,
+      "r": 0.13
+     },
+     {
+      "y": 0.68,
+      "r": 0.16
+     }
+    ]
+   },
+   {
+    "person": true
+   },
+   {
+    "fx": "magicCircle",
+    "part": "front",
+    "x": 0.5,
+    "y": 0.965,
+    "r": 0.27,
+    "squash": 0.2,
+    "color": "#a58bff"
+   },
+   {
+    "fx": "spellRings",
+    "part": "front",
+    "x": 0.5,
+    "color": "#c9b8ff",
+    "rings": [
+     {
+      "y": 0.42,
+      "r": 0.13
+     },
+     {
+      "y": 0.68,
+      "r": 0.16
+     }
+    ]
+   },
+   {
+    "src": "spell_front.webp"
+   },
+   {
+    "fx": "sparks",
+    "dir": "up",
+    "x0": 0.25,
+    "x1": 0.75,
+    "y": 0.98,
+    "rise": 0.9,
+    "count": 70,
+    "size": 2.2,
+    "color": "#b9a6ff"
+   },
+   {
+    "fx": "fog",
+    "y": 0.97,
+    "h": 0.22,
+    "color": "#8f7bff",
+    "alpha": 0.6,
+    "speed": 0.02
+   },
+   {
+    "fx": "flicker",
+    "color": "#8a6cff",
+    "amt": 0.03,
+    "flash": 0.45
+   }
+  ]
+ },
+ {
+  "id": "jail",
+  "name": "地下牢",
+  "desc": "鉄格子の向こうに閉じ込められる",
+  "thumb": "jail_thumb.jpg",
+  "grade": {
+   "tint": [
+    1.05,
+    0.88,
+    0.7
+   ],
+   "amt": 0.3,
+   "contrast": 1.08,
+   "bright": 0.82
+  },
+  "glow": {
+   "color": "rgba(0,0,0,0)",
+   "blur": 0
+  },
+  "fx": {
+   "shadow": {
+    "opacity": 0.6,
+    "squash": 0.05
+   },
+   "rim": {
+    "color": [
+     1.0,
+     0.55,
+     0.25
+    ],
+    "amt": 0.45
+   },
+   "shade": {
+    "x": 0.0,
+    "gap": 0.052,
+    "w": 0.02,
+    "skew": 0.06,
+    "opacity": 0.5,
+    "blur": 5
+   }
+  },
+  "layers": [
+   {
+    "src": "jail_back.jpg"
+   },
+   {
+    "person": true
+   },
+   {
+    "fx": "sparks",
+    "dir": "up",
+    "x0": 0.55,
+    "x1": 0.7,
+    "y": 0.75,
+    "rise": 0.25,
+    "count": 40,
+    "size": 1.4,
+    "color": "#c9d6ff",
+    "alpha": 0.5
+   },
+   {
+    "src": "jail_front.webp"
+   },
+   {
+    "fx": "flicker",
+    "color": "#ff8a3a",
+    "amt": 0.04,
+    "flash": 0.25
+   }
+  ]
+ },
+ {
+  "id": "kaiju",
+  "name": "怪獣から逃げろ",
+  "desc": "崩れる街に巨大怪獣が現れた",
+  "thumb": "kaiju_thumb.jpg",
+  "grade": {
+   "tint": [
+    1.05,
+    0.8,
+    0.65
+   ],
+   "amt": 0.3,
+   "contrast": 1.08,
+   "bright": 0.92
+  },
+  "glow": {
+   "color": "rgba(255,120,60,0.2)",
+   "blur": 8
+  },
+  "fx": {
+   "shadow": {
+    "opacity": 0.55,
+    "squash": 0.06
+   },
+   "rim": {
+    "color": [
+     1.0,
+     0.5,
+     0.25
+    ],
+    "amt": 0.6
+   }
+  },
+  "layers": [
+   {
+    "src": "kaiju_back.jpg"
+   },
+   {
+    "person": true
+   },
+   {
+    "fx": "fog",
+    "y": 0.93,
+    "h": 0.35,
+    "color": "#b98b6c",
+    "alpha": 0.6,
+    "speed": 0.03
+   },
+   {
+    "src": "kaiju_front.webp"
+   },
+   {
+    "fx": "debris",
+    "count": 35,
+    "size": 9
+   },
+   {
+    "fx": "sparks",
+    "dir": "up",
+    "x0": 0.0,
+    "x1": 1.0,
+    "y": 1.0,
+    "rise": 0.6,
+    "count": 50,
+    "size": 2,
+    "color": "#ff9a50"
+   },
+   {
+    "fx": "flicker",
+    "color": "#ff4a1e",
+    "amt": 0.05,
+    "flash": 0.4
+   }
+  ]
+ },
+ {
+  "id": "throne",
+  "name": "魔王の玉座",
+  "desc": "玉座の間に君臨する魔王になる",
+  "thumb": "throne_thumb.jpg",
+  "grade": {
+   "tint": [
+    0.95,
+    0.8,
+    1.05
+   ],
+   "amt": 0.28,
+   "contrast": 1.08,
+   "bright": 0.88
+  },
+  "glow": {
+   "color": "rgba(160,60,255,0.2)",
+   "blur": 8
+  },
+  "fx": {
+   "shadow": {
+    "opacity": 0.55,
+    "squash": 0.05
+   },
+   "rim": {
+    "color": [
+     0.75,
+     0.35,
+     1.0
+    ],
+    "amt": 0.7
+   }
+  },
+  "layers": [
+   {
+    "src": "throne_back.jpg"
+   },
+   {
+    "fx": "flames",
+    "points": [
+     [
+      0.245,
+      0.37,
+      0.016
+     ],
+     [
+      0.284,
+      0.36,
+      0.018
+     ],
+     [
+      0.324,
+      0.37,
+      0.016
+     ],
+     [
+      0.675,
+      0.37,
+      0.016
+     ],
+     [
+      0.715,
+      0.36,
+      0.018
+     ],
+     [
+      0.754,
+      0.37,
+      0.016
+     ]
+    ]
+   },
+   {
+    "fx": "fog",
+    "y": 0.97,
+    "h": 0.25,
+    "color": "#7a3cff",
+    "alpha": 0.55,
+    "speed": 0.015
+   },
+   {
+    "person": true
+   },
+   {
+    "src": "throne_front.webp"
+   },
+   {
+    "fx": "flames",
+    "points": [
+     [
+      0.027,
+      0.13,
+      0.035
+     ],
+     [
+      0.13,
+      0.15,
+      0.03
+     ],
+     [
+      0.87,
+      0.15,
+      0.03
+     ],
+     [
+      0.973,
+      0.13,
+      0.035
+     ]
+    ]
+   },
+   {
+    "fx": "sparks",
+    "dir": "up",
+    "x0": 0.1,
+    "x1": 0.9,
+    "y": 0.95,
+    "rise": 0.5,
+    "count": 40,
+    "size": 1.8,
+    "color": "#c98bff",
+    "alpha": 0.7
+   },
+   {
+    "fx": "flicker",
+    "color": "#a050ff",
+    "amt": 0.03,
+    "flash": 0.35
+   }
+  ]
+ }
+]

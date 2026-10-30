@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VFX BOOTH</title>
+<link rel="stylesheet" href="m3.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><div class="limb"><i class="limb-glow"></i><i class="limb-core"></i></div></div>
+
+<header class="nav">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="none" stroke="#1D1D1F" stroke-width="2.4"/><circle cx="16" cy="16" r="5" fill="#0071E3"/></svg>
+    <span>VFX BOOTH</span>
+  </div>
+  <nav class="phases" id="phases" aria-label="手順">
+    <button data-v="1"><span class="mono">01</span>準備</button>
+    <button data-v="2"><span class="mono">02</span>撮影</button>
+    <button data-v="3"><span class="mono">03</span>送信</button>
+  </nav>
+  <div class="nav-end">
+    <span id="camChip" class="chip warn">CAMERA</span>
+    <button id="helpBtn" class="btn outlined" style="height:44px">使い方</button>
+  </div>
+</header>
+
+<!-- 01 準備 -->
+<main class="view" id="v1" hidden>
+  <div class="frame">
+    <canvas id="raw" width="1280" height="720"></canvas>
+    <div class="ring" id="ring"></div>
+    <div class="panel tl">
+      <div class="eyebrow">Step 01 · Chroma key</div>
+      <div class="display" id="setTitle">緑をクリック</div>
+      <div class="swatch-row"><span id="swatch" class="swatch"></span><span class="eyebrow" id="setSub">画面の緑の背景</span></div>
+    </div>
+    <div class="preview">
+      <canvas id="prev" width="640" height="360"></canvas>
+      <div class="eyebrow">Result</div>
+    </div>
+    <div class="bar bl">
+      <label class="pill-select"><i data-ic="camera"></i><select id="camSel" aria-label="カメラ"></select></label>
+      <button id="tuneBtn" class="icon-btn" aria-label="微調整"><i data-ic="tune"></i></button>
+    </div>
+    <div class="bar br">
+      <button id="autoKey" class="btn outlined dim">自動で取る</button>
+      <button id="toLive" class="btn filled">撮影へ<i data-ic="next"></i></button>
+    </div>
+  </div>
+</main>
+
+<!-- 02 撮影 -->
+<main class="view" id="v2" hidden>
+  <div class="frame live">
+    <canvas id="stage" width="1280" height="720"></canvas>
+    <div class="standbox"></div><div class="standtag mono">立ち位置</div>
+    <div class="livetag mono"><i></i>LIVE</div>
+    <div id="count" class="count" aria-live="assertive"></div>
+    <div id="flash" class="flash"></div>
+    <div class="scrim"></div>
+    <div class="controls">
+      <div class="col scenes-col">
+        <div class="eyebrow">Scene <b id="sceneName"></b></div>
+        <div id="scenes" class="lenses"></div>
+      </div>
+      <div class="col mid">
+        <div class="shutter-row">
+          <span class="sp"></span>
+          <button id="shoot" class="shutter" aria-label="撮影スタート"><i data-ic="camera"></i></button>
+          <button id="cdBtn" class="timer mono" aria-label="カウントダウン">3s</button>
+        </div>
+        <div class="eyebrow">Shoot · Space</div>
+      </div>
+      <div class="col last-col">
+        <div class="eyebrow" id="lastLabel">Last shot</div>
+        <div class="last-row">
+          <button id="sendNav" class="btn filled" disabled>スマホへ送る</button>
+          <button id="lastThumb" class="last-thumb" aria-label="さっきの写真を見る" disabled><span class="empty">NO SHOT</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 03 送信 -->
+<main class="view" id="v3" hidden>
+  <div class="send">
+    <section class="s-col s1">
+      <div class="eyebrow">01</div>
+      <div class="display h">ページを開く</div>
+      <div class="qr small"><canvas id="qr1"></canvas></div>
+      <label class="field" style="margin-top:8px"><span>URL</span><input id="recvUrl" spellcheck="false" aria-label="受信ページのアドレス"></label>
+    </section>
+    <section class="s-col s2">
+      <div class="eyebrow acid">02</div>
+      <div class="display h">ページで読み取る</div>
+      <div class="qr big"><canvas id="qr2"></canvas><div id="qrBadge" class="qr-badge mono"></div></div>
+      <div class="prog"><div id="progBar"></div></div>
+    </section>
+    <section class="s-col s3">
+      <div class="eyebrow" id="photoLabel">Photo</div>
+      <img id="sendImg" class="send-img" alt="送る写真">
+      <div id="sendInfo" class="eyebrow"></div>
+      <div class="note"><i data-ic="lock"></i>ネットには送られません</div>
+      <div class="s3-actions">
+        <button id="backLive" class="btn filled">撮影に戻る</button>
+        <button id="sPause" class="icon-btn" aria-label="一時停止"><i data-ic="pause"></i></button>
+        <button id="showBig" class="icon-btn" aria-label="画面で見せる"><i data-ic="image"></i></button>
+        <button id="optBtn" class="icon-btn" aria-label="画質と速さ"><i data-ic="tune"></i></button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- 撮影結果 -->
+<dialog id="resDlg">
+  <div class="dlg-head"><div><div class="eyebrow">Result</div><div class="headline-s">撮影できました</div></div><button class="icon-btn" data-close aria-label="閉じる"><i data-ic="close"></i></button></div>
+  <div class="dlg-body"><img id="resImg" class="res-img" alt="撮影した写真"></div>
+  <div class="dlg-actions">
+    <button id="retake" class="btn text">撮り直す</button>
+    <button id="saveBtn" class="btn tonal"><i data-ic="download"></i>PCに保存</button>
+    <button id="sendBtn" class="btn filled"><i data-ic="phone"></i>スマホへ送る</button>
+  </div>
+</dialog>
+
+<!-- 微調整 -->
+<dialog id="tuneDlg" style="max-width:480px">
+  <div class="dlg-head"><div><div class="eyebrow">Fine tune</div><div class="headline-s">微調整</div></div><button class="icon-btn" data-close aria-label="閉じる"><i data-ic="close"></i></button></div>
+  <div class="dlg-body">
+    <div class="slider"><label for="sim">消す強さ</label><output id="simO"></output><input id="sim" type="range" min="0.02" max="0.40" step="0.005"><small>体まで消えたら下げる／緑が残ったら上げる</small></div>
+    <div class="slider"><label for="smo">ふちのなめらかさ</label><output id="smoO"></output><input id="smo" type="range" min="0.01" max="0.30" step="0.005"></div>
+    <div class="slider"><label for="spill">緑のにじみを消す</label><output id="spillO"></output><input id="spill" type="range" min="0" max="1" step="0.05"></div>
+    <div class="slider"><label for="pscale">人の大きさ</label><output id="pscaleO"></output><input id="pscale" type="range" min="0.4" max="1.6" step="0.01"></div>
+    <div class="slider"><label for="px">位置 左右</label><output id="pxO"></output><input id="px" type="range" min="-0.5" max="0.5" step="0.01"></div>
+    <div class="slider"><label for="py">位置 上下</label><output id="pyO"></output><input id="py" type="range" min="-0.3" max="0.4" step="0.01"></div>
+    <div class="slider"><label for="amt">シーンの色になじませる</label><output id="amtO"></output><input id="amt" type="range" min="0" max="0.8" step="0.01"></div>
+    <label class="switch">左右反転(鏡)<input id="mirror" type="checkbox" checked></label>
+    <label class="switch">背景を動かす<input id="anim" type="checkbox" checked></label>
+  </div>
+  <div class="dlg-actions"><button id="resetSet" class="btn text">リセット</button><button class="btn filled" data-close>OK</button></div>
+</dialog>
+
+<!-- 送信オプション -->
+<dialog id="optDlg" style="max-width:480px">
+  <div class="dlg-head"><div><div class="eyebrow">Transfer</div><div class="headline-s">画質と速さ</div></div><button class="icon-btn" data-close aria-label="閉じる"><i data-ic="close"></i></button></div>
+  <div class="dlg-body" style="display:flex;flex-direction:column;gap:16px">
+    <div><div class="eyebrow" style="margin-bottom:8px">画質</div>
+      <div class="seg" id="qltSeg"><button data-v="480">かんたん</button><button data-v="640">ふつう</button><button data-v="960">きれい</button></div></div>
+    <div><div class="eyebrow" style="margin-bottom:8px">速さ</div>
+      <div class="seg" id="spdSeg"><button data-v="4">ゆっくり</button><button data-v="6">ふつう</button><button data-v="8">速い</button></div></div>
+    <p class="body-m muted">読み取れない時は「ゆっくり」に。画面を明るくして、30cmほど離して。</p>
+  </div>
+  <div class="dlg-actions"><button class="btn filled" data-close>OK</button></div>
+</dialog>
+
+<!-- 使い方 -->
+<dialog id="helpDlg">
+  <div class="dlg-head"><div><div class="eyebrow">How to use</div><div class="headline-s">3ステップ</div></div><button class="icon-btn" data-close aria-label="閉じる"><i data-ic="close"></i></button></div>
+  <div class="dlg-body">
+    <div class="how">
+      <div class="how-c"><div class="how-ic"><i data-ic="pick"></i></div><div class="eyebrow">01 準備</div><div class="title-m">緑をクリック</div></div>
+      <div class="how-c"><div class="how-ic"><i data-ic="camera"></i></div><div class="eyebrow">02 撮影</div><div class="title-m">枠に立ってもらい、シャッター</div></div>
+      <div class="how-c"><div class="how-ic"><i data-ic="phone"></i></div><div class="eyebrow">03 送信</div><div class="title-m">スマホでQR①→QR②</div></div>
+    </div>
+  </div>
+  <div class="dlg-actions"><button class="btn filled" data-close>はじめる</button></div>
+</dialog>
+
+<div id="snack" role="status"></div>
+<script src="vendor/qrcode.js"></script>
+<script src="config.js"></script>
+<script src="common.js"></script>
+<script src="fx.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
