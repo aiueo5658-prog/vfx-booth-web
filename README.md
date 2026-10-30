@@ -5,7 +5,7 @@
 
 ## 起動
 `start.command`(Mac)か `start.bat`(Windows)をダブルクリック(ブラウザで http://localhost:8080 が開く)。止めるときはターミナルで Ctrl+C。
-中身は静的な Web ページなので、HTTPS の静的ホスティングに置けばそのまま Web サイトとしても動く(カメラは HTTPS か localhost でだけ使える)。
+Web 版: https://aiueo5658-prog.github.io/vfx-booth-web/ (公開リポジトリ `vfx-booth-web`)。更新は commit してから `tools/deploy_web.sh`。
 初回は「開発元を確認できません」と出たら、右クリック → 開く。
 
 ## 当日の流れ

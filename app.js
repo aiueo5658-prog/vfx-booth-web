@@ -5,7 +5,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 VFX.hydrateIcons();
 
 // ───────── 設定(ブラウザ内にだけ保存)
-const DEF = { key: [0.1, 0.75, 0.2], sim: 0.14, smo: 0.10, spill: 0.8, pscale: 1, px: 0, py: 0, amt: null, mirror: true, anim: true, cd: 3, scene: 'boom', cam: '', spd: 6, qlt: 480 };
+const DEF = { key: [0.1, 0.75, 0.2], sim: 0.14, smo: 0.10, spill: 0.8, pscale: 1, px: 0, py: 0, amt: null, mirror: true, anim: true, cd: 3, scene: 'boom', cam: '', spd: 6, qlt: 480, matte: [0, 0, 1, 1] };
 let keyPicked = false;
 let S = Object.assign({}, DEF);
 try { Object.assign(S, JSON.parse(localStorage.getItem('vfx_set3') || '{}')); } catch (e) {}
@@ -43,11 +43,15 @@ const keyCanvas = document.createElement('canvas');
 const gl = keyCanvas.getContext('webgl', { premultipliedAlpha: true, preserveDrawingBuffer: true, alpha: true });
 const VS = 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
 const FS = `precision mediump float;varying vec2 v;uniform sampler2D tex;uniform vec3 key,tint;
-uniform float sim,smo,spill,amt,contrast,bright,rimAmt;uniform int dom;uniform vec3 rimCol;uniform vec2 px;
+uniform float sim,smo,spill,amt,contrast,bright,rimAmt;uniform int dom;uniform vec3 rimCol;uniform vec2 px;uniform vec4 rect;
+bool outR(vec2 q){return q.x<rect.x||q.y<rect.y||q.x>rect.z||q.y>rect.w;}   // 抜く範囲の外は全部透明
 vec2 cc(vec3 c){return vec2(-.168736*c.r-.331264*c.g+.5*c.b,.5*c.r-.418688*c.g-.081312*c.b);}
-float ka(vec2 q){return smoothstep(sim,sim+smo,distance(cc(texture2D(tex,q).rgb),cc(key)));}
+// 色差キー: 緑が赤・青よりどれだけ勝っているか。くすんだ実物のGBでも、暗い服や肌は消えない
+float kd(vec3 c){float d,k;if(dom==1){d=c.g-max(c.r,c.b);k=key.g-max(key.r,key.b);}else{d=c.b-max(c.r,c.g);k=key.b-max(key.r,key.g);}
+ d/=max(k,.05);float T=.55-sim,W=max(smo*3.,.02);return 1.-smoothstep(T-W*.5,T+W*.5,d);}
+float ka(vec2 q){if(outR(q))return 0.;return kd(texture2D(tex,q).rgb);}
 void main(){vec3 c=texture2D(tex,v).rgb;
-float d=distance(cc(c),cc(key));float a=smoothstep(sim,sim+smo,d);
+float a=outR(v)?0.:kd(c);
 // 縁の光: 左右の少し外側が背景なら輪郭。シーンの光の色を乗せる
 float e=0.;for(int i=1;i<=3;i++){float k=float(i)*4.;e=max(e,max(1.-ka(v+vec2(px.x*k,0.)),1.-ka(v-vec2(px.x*k,0.)))*(1.-float(i-1)*.25));}
 if(dom==1){float l=max(c.r,c.b);c.g=mix(c.g,min(c.g,l),spill);}else{float l=max(c.r,c.g);c.b=mix(c.b,min(c.b,l),spill);}
@@ -63,7 +67,7 @@ function initGL() {
   const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  ['key', 'tint', 'sim', 'smo', 'spill', 'amt', 'contrast', 'bright', 'dom', 'rimCol', 'rimAmt', 'px'].forEach(n => U[n] = gl.getUniformLocation(prog, n));
+  ['key', 'tint', 'sim', 'smo', 'spill', 'amt', 'contrast', 'bright', 'dom', 'rimCol', 'rimAmt', 'px', 'rect'].forEach(n => U[n] = gl.getUniformLocation(prog, n));
   tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -78,6 +82,7 @@ function runKey(src, sw, sh) {
   gl.uniform1f(U.sim, S.sim); gl.uniform1f(U.smo, S.smo); gl.uniform1f(U.spill, S.spill);
   gl.uniform1f(U.amt, S.amt ?? g.amt); gl.uniform1f(U.contrast, g.contrast); gl.uniform1f(U.bright, g.bright);
   gl.uniform1i(U.dom, k[2] > k[1] ? 2 : 1);
+  const m = S.matte || [0, 0, 1, 1]; gl.uniform4f(U.rect, m[0], m[1], m[2], m[3]);
   const rim = scene.fx?.rim || { color: [0, 0, 0], amt: 0 };
   gl.uniform3f(U.rimCol, rim.color[0], rim.color[1], rim.color[2]); gl.uniform1f(U.rimAmt, rim.amt);
   gl.uniform2f(U.px, 1 / sw, 1 / sh);
@@ -151,7 +156,7 @@ function sample(nx, ny, r = 6) {
   return [R / n / 255, G / n / 255, B / n / 255];
 }
 function setKey(c, picked) { if (picked) keyPicked = true; S.key = c; save(); updateGuide(); $('#swatch').style.background = `rgb(${c.map(v => Math.round(v * 255))})`; }
-raw.onclick = e => { const r = raw.getBoundingClientRect(); setKey(sample((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height), true); snack('緑の色を取りました'); };
+raw.onclick = e => { if (matteEdit) return; const r = raw.getBoundingClientRect(); setKey(sample((e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height), true); snack('緑の色を取りました'); };
 $('#autoKey').onclick = () => {
   const pts = [[.05, .08], [.95, .08], [.05, .5], [.95, .5]].map(p => sample(p[0], p[1], 8));
   setKey([0, 1, 2].map(i => pts.reduce((a, p) => a + p[i], 0) / pts.length), true); snack('四隅の色を取りました');
@@ -171,6 +176,32 @@ $('#mirror').onchange = e => { S.mirror = e.target.checked; save(); };
 $('#anim').onchange = e => { S.anim = e.target.checked; save(); };
 $('#cdBtn').onclick = () => { S.cd = S.cd === 3 ? 5 : S.cd === 5 ? 0 : 3; $('#cdBtn').textContent = S.cd ? S.cd + 's' : '0s'; save(); };
 $('#tuneBtn').onclick = () => $('#tuneDlg').showModal();
+
+// ───────── 抜く範囲(クロップ): ドラッグで囲んだ長方形の中だけ緑を抜き、外は全部背景にする
+let matteEdit = false, drag = null;
+const clamp01 = n => Math.min(1, Math.max(0, n));
+function paintMatte() {
+  const m = S.matte || [0, 0, 1, 1], b = $('#matteBox');
+  Object.assign(b.style, { left: m[0] * 100 + '%', top: m[1] * 100 + '%', width: (m[2] - m[0]) * 100 + '%', height: (m[3] - m[1]) * 100 + '%' });
+  const full = m[0] <= 0 && m[1] <= 0 && m[2] >= 1 && m[3] >= 1;
+  b.classList.toggle('full', full && !matteEdit); b.classList.toggle('edit', matteEdit);
+  $('#matteBtn').setAttribute('aria-pressed', matteEdit); $('#matteReset').hidden = !matteEdit;
+  if (matteEdit) { $('#setTitle').textContent = '範囲をドラッグ'; $('#setSub').textContent = 'GBの内側を囲む。外は全部消える'; }
+}
+function setMatteEdit(on) { matteEdit = on; raw.style.cursor = on ? 'crosshair' : ''; $('#ring').classList.toggle('off', on || keyPicked); paintMatte(); if (!on) updateGuide(); }
+$('#matteBtn').onclick = () => setMatteEdit(!matteEdit);
+$('#matteReset').onclick = () => { S.matte = [0, 0, 1, 1]; save(); paintMatte(); };
+const rawPt = e => { const r = raw.getBoundingClientRect(); return [clamp01((e.clientX - r.left) / r.width), clamp01((e.clientY - r.top) / r.height)]; };
+raw.addEventListener('pointerdown', e => { if (!matteEdit) return; drag = rawPt(e); raw.setPointerCapture(e.pointerId); });
+raw.addEventListener('pointermove', e => {
+  if (!drag) return; const [x, y] = rawPt(e);
+  S.matte = [Math.min(drag[0], x), Math.min(drag[1], y), Math.max(drag[0], x), Math.max(drag[1], y)]; paintMatte();
+});
+raw.addEventListener('pointerup', () => {
+  if (!drag) return; drag = null;
+  const m = S.matte; if (m[2] - m[0] < .05 || m[3] - m[1] < .05) S.matte = [0, 0, 1, 1];   // 小さすぎたら全体に戻す
+  save(); setMatteEdit(false); snack('抜く範囲を決めました');
+});
 $('#resetSet').onclick = () => { const keep = { scene: S.scene, cam: S.cam }; S = Object.assign({}, DEF, keep); applySlidersFromState(); save(); snack('リセットしました'); };
 
 // ───────── 画面(01 準備 / 02 撮影 / 03 送信)
@@ -386,7 +417,7 @@ $('#helpDlg').addEventListener('close', () => { try { localStorage.setItem('vfx_
   applySlidersFromState();
   await loadScenes();
   requestAnimationFrame(frame);
-  go(1); updateLast(); updateGuide();
+  go(1); updateLast(); updateGuide(); paintMatte();
   await initCamera(); updateGuide();
   let seen = false; try { seen = !!localStorage.getItem('vfx_help'); } catch (e) {}
   if (!seen) $('#helpDlg').showModal();

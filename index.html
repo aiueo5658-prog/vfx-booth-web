@@ -30,6 +30,7 @@
 <main class="view" id="v1" hidden>
   <div class="frame">
     <canvas id="raw" width="1280" height="720"></canvas>
+    <div class="matte" id="matteBox"></div>
     <div class="ring" id="ring"></div>
     <div class="panel tl">
       <div class="eyebrow">Step 01 · Chroma key</div>
@@ -42,6 +43,8 @@
     </div>
     <div class="bar bl">
       <label class="pill-select"><i data-ic="camera"></i><select id="camSel" aria-label="カメラ"></select></label>
+      <button id="matteBtn" class="btn outlined dim" aria-pressed="false"><i data-ic="crop"></i>抜く範囲</button>
+      <button id="matteReset" class="btn text" hidden>全体に戻す</button>
       <button id="tuneBtn" class="icon-btn" aria-label="微調整"><i data-ic="tune"></i></button>
     </div>
     <div class="bar br">
